@@ -16,17 +16,15 @@ public:
 	inline bool is_empty() const noexcept;
 	inline bool is_full() const noexcept;
 	void clear() noexcept;
-	void print();
+	T head();
 	~Stack() {
 		delete[] _data;
 	}
 };
 
 template <class T>
-void Stack<T> ::print(){
-	for (int i = 0; i <= _top; i++) {
-		std::cout << _data[i];
-	}
+T Stack<T> ::head(){
+	return _data[_top];
 }
 
 template <class T>
