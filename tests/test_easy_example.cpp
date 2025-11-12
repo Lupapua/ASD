@@ -43,3 +43,48 @@ TEST(DSUTest, EasyExample) {
 
 	EXPECT_EQ(actual_island_count, expected_island_count);
 }
+
+TEST(DSUTest, EasyExample_two) {
+	std::vector<std::vector<int>> field = {
+		{1, 1, 0, 0, 0, 1, 1},
+		{1, 0, 0, 0, 0, 1, 0},
+		{0, 1, 1, 0, 1, 0, 0},
+		{0, 0, 1, 1, 0, 0, 0},
+		{0, 0, 1, 0, 0, 0, 1}
+	};
+
+	int expected_island_count = 5;
+	int actual_island_count = count_islands(field);
+
+	EXPECT_EQ(actual_island_count, expected_island_count);
+}
+
+TEST(DSUTest, only_zero) {
+	std::vector<std::vector<int>> field = {
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0}
+	};
+
+	int expected_island_count = 0;
+	int actual_island_count = count_islands(field);
+
+	EXPECT_EQ(actual_island_count, expected_island_count);
+}
+
+TEST(DSUTest, only_one) {
+	std::vector<std::vector<int>> field = {
+		{1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1}
+	};
+
+	int expected_island_count = 1;
+	int actual_island_count = count_islands(field);
+
+	EXPECT_EQ(actual_island_count, expected_island_count);
+}
