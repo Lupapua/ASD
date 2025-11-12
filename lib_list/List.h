@@ -265,9 +265,7 @@ template <class T>
 void List<T> ::clear() noexcept {
 	Node<T>* current = _head;
 	while (current != nullptr) {
-		Node<T>* temp = current;
-		current = current->next;
-		delete temp;
+		pop_front();
 	}
 	_head = nullptr;
 	_tail = nullptr;
