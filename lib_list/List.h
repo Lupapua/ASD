@@ -165,7 +165,9 @@ void List<T> ::insert(const T& val, Node<T>* node) {
 
 template <class T>
 void List<T> ::pop_back() {
-	if (_head == nullptr) return;
+	if (_head == nullptr) {
+		throw std::logic_error("list is empty");
+	};
 	if (_head == _tail) {
 		delete _head;
 		_head = nullptr;
@@ -185,7 +187,9 @@ void List<T> ::pop_back() {
 
 template <class T>
 void List<T> ::pop_front() {
-	if (_head == nullptr) return;
+	if (_head == nullptr) {
+		throw std::logic_error("list is empty");
+	};
 	Node<T>* temp = _head;
 	_head = _head->next;
 	delete temp;
@@ -197,7 +201,9 @@ void List<T> ::pop_front() {
 
 template <class T>
 void List<T> ::erase(int index) {
-	if (index < 0 || index >= count) throw std::logic_error("incorrect index");
+	if (index < 0 || index >= count) {
+		throw std::logic_error("incorrect index");
+	}
 	if (index == 0) {
 		pop_front();
 		return;
@@ -217,7 +223,9 @@ void List<T> ::erase(int index) {
 
 template <class T>
 void List<T> ::erase(Node<T>* node) {
-	if (node == nullptr || _head == nullptr) return;
+	if (node == nullptr || _head == nullptr) {
+		throw std::logic_error("null node or empty list");
+	};
 	if (node == _head) {
 		pop_front();
 		return;
