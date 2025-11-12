@@ -5,7 +5,7 @@ template <class T>
 struct Node
 {
 	T value;
-	Node<T> next;
+	Node<T>* next;
 	Node(T value_, Node<T>* next_ = nullptr);
 };
 
@@ -35,15 +35,12 @@ public:
 	T& front();
 	T& back();
 	int size() const;
-	void clear();
-	Node<T>* begin();
-	Node<T>* end();
 
 
 	class Iterator {
 		Node<T>* _current;
 	public:
-		Iterator() : _current(_head) {};
+		Iterator() : _current(nullptr) {};
 		Iterator(Node<T>* pos) : _current(pos) {};
 		Iterator(const Iterator& other) : _current(other._current) {};
 
@@ -76,8 +73,7 @@ public:
 			_current = other._current;
 			return *this;
 		}
-	}
-	typedef Iterator iterator;
+	};
 };
 
 template <class T>

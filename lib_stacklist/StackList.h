@@ -4,7 +4,7 @@
 
 template <class T>
 class StackList {
-	List _data;
+	List<T> _data;
 public:
 	void push(const T& val);
 	T& top();
@@ -15,7 +15,6 @@ public:
 
 template <class T>
 void StackList<T> ::push(const T& val) {
-	_top++;
 	_data.push_back(val);
 }
 
@@ -39,7 +38,6 @@ void StackList<T> ::pop() {
 	if (_data.is_empty()) {
 		throw std::logic_error("Stack is empty");
 	}
-	_top--;
 	_data.pop_back();
 }
 

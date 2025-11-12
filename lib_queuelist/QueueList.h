@@ -4,7 +4,7 @@
 
 template <class T>
 class QueueList {
-	List _data;
+	List<T> _data;
 public:
 	void push(const T& val);
 	void pop();
