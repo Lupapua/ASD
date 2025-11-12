@@ -1,5 +1,6 @@
 #include "DSU.h"
 #include <iostream>
+#include <vector>
 
 DSU::DSU(int size) {
 	_size = size;

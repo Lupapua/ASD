@@ -1,50 +1,45 @@
-// Copyright 2024 Marina Usova
-
 #include <gtest/gtest.h>
-#include "../lib_easy_example/easy_example.h"
+#include "../lib_DSU/DSU.h"
 
-#define EPSILON 0.000001
-
-TEST(TestEasyExampleLib, can_div) {
-  // Arrange
-  int x = 10;
-  int y = 2;
-
-  // Act & Assert
-  ASSERT_NO_THROW(division(x, y));
+int count_islands(std::vector<std::vector<int>>& field) {
+	if (field.empty()) { return 0; }
+	int rows = field.size();
+	int cols = field[0].size();
+	DSU dsu(rows * cols);
+	int islandCount = 0;
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			if (field[i][j] == 1) {
+				islandCount++;
+				if (j + 1 < cols && field[i][j + 1] == 1) {
+					if (dsu.find(i * cols + j) != dsu.find(i * cols + (j + 1))) {
+						dsu.unite(i * cols + j, i * cols + (j + 1));
+						islandCount--;
+					}
+				}
+				if (i + 1 < rows && field[i + 1][j] == 1) {
+					if (dsu.find(i * cols + j) != dsu.find((i + 1) * cols + j)) {
+						dsu.unite(i * cols + j, (i + 1) * cols + j);
+						islandCount--;
+					}
+				}
+			}
+		}
+	}
+	return islandCount;
 }
 
-TEST(TestEasyExampleLib, can_div_correctly) {
-    // Arrange
-    int x = 6;
-    int y = 2;
+TEST(DSUTest, EasyExample) {
+	std::vector<std::vector<int>> field = {
+		{1, 1, 0, 0, 0},
+		{1, 0, 0, 1, 1},
+		{0, 0, 0, 1, 0},
+		{0, 1, 0, 0, 0},
+		{1, 1, 0, 0, 1}
+	};
 
-    // Act
-    int actual_result = division(x, y);
+	int expected_island_count = 4;
+	int actual_island_count = count_islands(field);
 
-    // Assert
-    int expected_result = 3;
-    EXPECT_EQ(expected_result, actual_result);
-}
-
-TEST(TestEasyExampleLib, can_div_correctly_with_remainder) {
-    // Arrange
-    int x = 5;
-    int y = 4;
-
-    // Act
-    float actual_result = division(x, y);
-
-    // Assert
-    float expected_result = 1.25;
-    EXPECT_NEAR(expected_result, actual_result, EPSILON);
-}
-
-TEST(TestEasyExampleLib, throw_when_try_div_by_zero) {
-  // Arrange
-  int x = 10;
-  int y = 0;
-
-  // Act & Assert
-  ASSERT_ANY_THROW(division(x, y));
+	EXPECT_EQ(actual_island_count, expected_island_count);
 }
