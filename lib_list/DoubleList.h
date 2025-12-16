@@ -43,47 +43,40 @@ public:
 		Iterator(const Iterator& other) : _current(other._current) {}
 
 		Iterator& operator++() {
-			if (_current) _current = _current->next;
+			if (_current) _current = _current->_next;
 			return *this;
 		}
-
 		Iterator operator++(int) {
 			Iterator temp = *this;
 			++(*this);
 			return temp;
 		}
 
-		T& operator*() {
-			return _current->value;
-		}
-
-		bool operator!=(const Iterator& other) const {
-			return _current != other._current;
-		}
-
-		bool operator==(const Iterator& other) const {
-			return _current == other._current;
-		}
-
-		Iterator& operator=(const Iterator& other) {
-			_current = other._current;
-			return *this;
-		}
-
 		Iterator& operator--() {
 			if (_current) _current = _current->_prev;
 			return *this;
 		}
-
 		Iterator operator--(int) {
 			Iterator temp = *this;
 			--(*this);
 			return temp;
 		}
-	};
 
+		T& operator*() { return _current->_value; }
+
+		bool operator==(const Iterator& other) const { return _current == other._current; }
+		bool operator!=(const Iterator& other) const { return _current != other._current; }
+
+		Iterator& operator=(const Iterator& other) {
+			_current = other._current;
+			return *this;
+		}
+	};
 	Iterator begin_iter() const { return Iterator(_head); }
 	Iterator end_iter() const { return Iterator(nullptr); }
+
+	Iterator rbegin_iter() const { return Iterator(_tail); }
+	Iterator rend_iter() const { return Iterator(nullptr); }
 };
 
 
@@ -98,8 +91,8 @@ DoubleList<T> ::DoubleList(const DoubleList<T>& other) {
 	count = 0;
 	Node<T>* current = other._head;
 	while (current != nullptr) {
-		push_back(current->value);
-		current = current->next;
+		push_back(current->_value);
+		current = current->_next;
 	}
 }
 
