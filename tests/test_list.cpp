@@ -197,14 +197,11 @@ TEST(TestIterator, Empty) {
     EXPECT_EQ(list.begin_iter(), list.end_iter());
 
     List<int>::Iterator it1 = list.begin_iter();
-    List<int>::Iterator it2 = it1++;
 
     EXPECT_EQ(it1, list.end_iter());
-    EXPECT_EQ(it2, list.end_iter());
 
-    List<int>::Iterator it3 = list.begin_iter();
-    ++it3;
-
-    EXPECT_EQ(it3, list.end_iter());
+    for (List<int>::Iterator it = list.begin_iter(); it != list.end_iter(); it++) {
+        ADD_FAILURE();
+    }
 }
 

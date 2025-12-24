@@ -41,11 +41,11 @@ public:
         Node<T>* _head;
     public:
         Iterator(Node<T>* pos = nullptr, Node<T>* head = nullptr)
-            : _current(pos), _head(head) {
+    
+        : _current(pos), _head(head) {
         }
-
         Iterator& operator++() {
-            if (_current) _current = _current->next;
+            _current = _current->next;
             return *this;
         }
         Iterator operator++(int) {

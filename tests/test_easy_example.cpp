@@ -191,11 +191,16 @@ TEST(TestDoubleListIterator, WriteBackward) {
 
     DoubleList<int>::Iterator it = list.rbegin_iter();
     int tmp = 30;
-    while (true) {
+    //while (true) {
+    //    *it = tmp;
+    //    if (it == list.begin_iter()) break;
+    //    tmp -= 10;
+    //    --it;
+    //}
+
+    for (; it != list.rend_iter(); it--) {
         *it = tmp;
-        if (it == list.begin_iter()) break;
         tmp -= 10;
-        --it;
     }
 
     it = list.begin_iter();
@@ -213,13 +218,8 @@ TEST(TestDoubleListIterator, EmptyForward) {
     EXPECT_EQ(list.begin_iter(), list.end_iter());
 
     DoubleList<int>::Iterator it1 = list.begin_iter();
-    DoubleList<int>::Iterator it2 = it1++;
     EXPECT_EQ(it1, list.end_iter());
-    EXPECT_EQ(it2, list.end_iter());
 
-    DoubleList<int>::Iterator it3 = list.begin_iter();
-    ++it3;
-    EXPECT_EQ(it3, list.end_iter());
 }
 
 TEST(TestDoubleListIterator, EmptyBackward) {
@@ -228,11 +228,5 @@ TEST(TestDoubleListIterator, EmptyBackward) {
     EXPECT_EQ(list.rbegin_iter(), list.rend_iter());
 
     DoubleList<int>::Iterator it1 = list.rbegin_iter();
-    DoubleList<int>::Iterator it2 = it1--;
     EXPECT_EQ(it1, list.rend_iter());
-    EXPECT_EQ(it2, list.rend_iter());
-
-    DoubleList<int>::Iterator it3 = list.rbegin_iter();
-    --it3;
-    EXPECT_EQ(it3, list.rend_iter());
 }

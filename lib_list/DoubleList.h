@@ -43,7 +43,7 @@ public:
 		Iterator(const Iterator& other) : _current(other._current) {}
 
 		Iterator& operator++() {
-			if (_current) _current = _current->_next;
+			_current = _current->_next;
 			return *this;
 		}
 		Iterator operator++(int) {
@@ -53,7 +53,7 @@ public:
 		}
 
 		Iterator& operator--() {
-			if (_current) _current = _current->_prev;
+			_current = _current->_prev;
 			return *this;
 		}
 		Iterator operator--(int) {
