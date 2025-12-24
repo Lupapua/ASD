@@ -54,34 +54,6 @@ public:
             return tmp;
         }
 
-        Iterator& operator--() {
-            if (_head == nullptr) {
-                _current = nullptr;
-                return *this;
-            }
-            if (_current == nullptr) {
-                Node<T>* temp = _head;
-                while (temp->next) temp = temp->next;
-                _current = temp;
-                return *this;
-            }
-            if (_current == _head) {
-                _current = nullptr;
-                return *this;
-            }
-            Node<T>* temp = _head;
-            while (temp->next != _current) {
-                temp = temp->next;
-            }
-            _current = temp;
-            return *this;
-        }
-        Iterator operator--(int) {
-            Iterator tmp = *this;
-            --(*this);
-            return tmp;
-        }
-
         T& operator*() { return _current->value; }
         bool operator==(const Iterator& other) const { return _current == other._current; }
         bool operator!=(const Iterator& other) const { return _current != other._current; }
@@ -272,12 +244,12 @@ Node<T>* List<T>::find(const T& val) {
 
 template <class T>
 void List<T>::clear() noexcept {
-    while (_head != nullptr) {
-        pop_front();
-    }
-    _head = nullptr;
-    _tail = nullptr;
-    count = 0;
+	while (_head != nullptr) {
+		pop_front();
+	}
+	_head = nullptr;
+	_tail = nullptr;
+	count = 0;
 }
 
 template <class T>
