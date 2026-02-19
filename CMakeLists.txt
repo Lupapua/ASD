@@ -23,6 +23,8 @@ add_subdirectory(lib_stacklist)
 add_subdirectory(lib_queuelist)
 add_subdirectory(lib_tvector)
 add_subdirectory(lib_table)
+add_subdirectory(lib_monom)
+add_subdirectory(lib_polinom)
 
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 
