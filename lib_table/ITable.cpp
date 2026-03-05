@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <utility>
 #include "../lib_tvector/TVector.h"
 
 template <typename Tkey, typename Tvalue>
@@ -17,7 +18,7 @@ public:
 template <typename Tkey, typename Tvalue>
 class UnsortedTableOnVec : public ITable<Tkey, Tvalue> {
 private:
-	Tvector<std::pair <Tkey, Tvalue>> _rows;
+	TVector<std::pair <Tkey, Tvalue>> _rows;
 	
 public:
 	~UnsortedTableOnVec() {};
@@ -27,7 +28,6 @@ public:
 	Tvalue find(const Tkey& key) const;
 	void erase(const Tkey& key);
 	ostream& print(ostream& out) const noexcept;
-	bool is_empty() const noexcept;
 	bool consist(const Tkey& key) const noexcept;
 };
 
