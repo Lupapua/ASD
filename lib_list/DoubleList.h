@@ -63,6 +63,7 @@ public:
 		}
 
 		T& operator*() { return _current->_value; }
+		T* operator->() { return &(_current->_value); }
 
 		bool operator==(const Iterator& other) const { return _current == other._current; }
 		bool operator!=(const Iterator& other) const { return _current != other._current; }
@@ -306,4 +307,3 @@ void DoubleList<T> ::insert(const T& val, Node<T>* node) {
 	node->_prev = newNode;
 	count++;
 }
-

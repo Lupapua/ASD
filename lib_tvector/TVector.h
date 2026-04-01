@@ -6,7 +6,7 @@ using namespace std;
 template <class T> class TVector;
 template <class T> ostream& operator<<(ostream& out, const TVector<T>& dmass);
 
-int calc_capacity(int n) {
+inline int calc_capacity(int n) {
     return (n + STEP_CAPACITY) / STEP_CAPACITY * STEP_CAPACITY;
 }
 
@@ -106,31 +106,31 @@ TVector<T>& TVector<T>::operator=(const TVector& other) {
 
 template <class T>
 void TVector<T>::update_capacity(int n) {
-    if (n >= 0) {
-       
-        if (n >= _capacity) {
-            _capacity = calc_capacity(_size);
-            T* new_data = new T[_capacity];
-            for (int i = 0; i < _size; i++) {
-                new_data[i] = _data[i];
-            }
-            if (_data != nullptr) {
-                delete[] _data;
-            }
-            _data = new_data;
-        }
-        _size = n;
-    }
-    else {
+    if (n < 0) {
         throw logic_error("n < 0");
     }
+
+    // если нужно увеличить буфер Ч вычисл€ем Ємкость по требуемому n (не по старому _size)
+    if (static_cast<size_t>(n) > _capacity) {
+        _capacity = calc_capacity(n);
+        T* new_data = new T[_capacity];
+        // копируем только существующие элементы (по _size)
+        for (size_t i = 0; i < _size; ++i) {
+            new_data[i] = _data[i];
+        }
+        if (_data != nullptr) {
+            delete[] _data;
+        }
+        _data = new_data;
+    }
+    _size = static_cast<size_t>(n);
 }
 
 
 template <class T>
 std::ostream& operator<<(std::ostream& out, const TVector<T>& dmass) {
     out << "( ";
-    for (size_t i = 0; i < dmass.size(); i++) {
+    for (size_t i = 0; i < static_cast<size_t>(dmass.size()); i++) {
         out << dmass[i] << " ";
     }
     out << ")";
@@ -140,26 +140,26 @@ std::ostream& operator<<(std::ostream& out, const TVector<T>& dmass) {
 template <class T>
 TVector<T>::TVector(std::initializer_list<T> data) {
     _size = data.size();
-    _capacity = calc_capacity(_size);
+    _capacity = calc_capacity(static_cast<int>(_size));
     _data = new T[_capacity];
-    for (int i = 0; i < _size; i++) {
+    for (size_t i = 0; i < _size; ++i) {
         _data[i] = *(data.begin() + i);
     }
 
 };
 
 template <class T>
-TVector<T>::TVector(const TVector& other) : _size(other._size), _capacity(calc_capacity(other._size)) {
+TVector<T>::TVector(const TVector& other) : _size(other._size), _capacity(calc_capacity(static_cast<int>(other._size))) {
     _data = new T[_capacity];
-    for (int i = 0; i < _size; i++) {
+    for (size_t i = 0; i < _size; ++i) {
         _data[i] = other._data[i];
     }
 };
 
 template <class T>
-TVector<T>::TVector(const T* arr, size_t n) : _size(n), _capacity(calc_capacity(n)) {
+TVector<T>::TVector(const T* arr, size_t n) : _size(n), _capacity(calc_capacity(static_cast<int>(n))) {
     _data = new T[_capacity];
-    for (int i = 0; i < _size; ++i) {
+    for (size_t i = 0; i < _size; ++i) {
         _data[i] = arr[i];
     }
 };
@@ -167,7 +167,7 @@ TVector<T>::TVector(const T* arr, size_t n) : _size(n), _capacity(calc_capacity(
 template <class T>
 TVector<T>::TVector(int n){
     if (n >= 0) {
-        _size = n;
+        _size = static_cast<size_t>(n);
         _capacity = calc_capacity(n);
         _data = new T[_capacity];
     }
@@ -188,25 +188,25 @@ inline const T& TVector<T>::operator[](size_t index) const noexcept {
 
 template <class T>
 inline int TVector<T>::size() const noexcept {
-    return _size;
+    return static_cast<int>(_size);
 }
 
 template <class T>
 inline int TVector<T>::capacity() const noexcept {
-    return _capacity;
+    return static_cast<int>(_capacity);
 }
 
 template <class T>
 void TVector<T>::push_back(const T& number) {
-    update_capacity(_size + 1);
+    update_capacity(static_cast<int>(_size) + 1);
     _data[_size - 1] = number;
 }
 
 template <class T>
 void TVector<T>::push_front(const T& number) {
-    update_capacity(_size + 1);
-    for (int i = 0; i < _size; i++) {
-        _data[_size - 1 - i] = _data[_size - 2 - i];
+    update_capacity(static_cast<int>(_size) + 1);
+    for (size_t i = 0; i < _size - 1; ++i) {
+        _data[_size - i - 1] = _data[_size - i - 2];
     }
     _data[0] = number;
 }
@@ -217,9 +217,9 @@ int TVector<T>::find_first(T number) {
         throw logic_error("not finded");
     }
 
-    for (int i = 0; i < _size; i++) {
+    for (size_t i = 0; i < _size; ++i) {
         if (_data[i] == number) {
-            return i + 1;
+            return static_cast<int>(i) + 1;
         }
     }
     throw logic_error("not finded");
@@ -227,15 +227,13 @@ int TVector<T>::find_first(T number) {
 
 template <class T>
 int TVector<T>::find_last(T number) {
-    int i = _size - 1;
-
     if (_data == nullptr || _size == 0) {
         throw logic_error("not finded");
     }
 
-    while (i >= 0 && _data[i] != number)
-    {
-        i--;
+    int i = static_cast<int>(_size) - 1;
+    while (i >= 0 && _data[i] != number) {
+        --i;
     }
     if (i >= 0) {
         return i + 1;
@@ -248,7 +246,7 @@ int TVector<T>::find_last(T number) {
 
 template <class T>
 void TVector<T>::erase(int pos, int count) {
-    if (pos >= 1 && pos <= _size && (pos+count) <= _size) {
+    if (pos >= 1 && pos <= static_cast<int>(_size) && (pos + count) <= static_cast<int>(_size)) {
         for (int j = 0; j < count; j++) {
             pop(pos);
         }
@@ -256,16 +254,16 @@ void TVector<T>::erase(int pos, int count) {
     else {
         throw logic_error("incorrect pos or count or both");
     }
-    
+
 }
 
 template <class T>
 void TVector<T>::pop(int pos) {
-    if (pos >= 1 && pos <= _size) {
-        for (int i = pos; i < _size; i++) {
+    if (pos >= 1 && pos <= static_cast<int>(_size)) {
+        for (int i = pos; i < static_cast<int>(_size); i++) {
             _data[i - 1] = _data[i];
         }
-        update_capacity(_size - 1);
+        update_capacity(static_cast<int>(_size) - 1);
     }
     else {
         throw logic_error("incorrect position");
@@ -274,7 +272,7 @@ void TVector<T>::pop(int pos) {
 
 template <class T>
 void TVector<T>::pop_back() {
-    pop(_size);
+    pop(static_cast<int>(_size));
 }
 
 template <class T>

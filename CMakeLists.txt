@@ -25,6 +25,8 @@ add_subdirectory(lib_tvector)
 add_subdirectory(lib_table)
 add_subdirectory(lib_monom)
 add_subdirectory(lib_polinom)
+add_subdirectory(lib_bstree)
+add_subdirectory(lib_tree)
 
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 

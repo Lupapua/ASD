@@ -12,7 +12,7 @@ struct Node
 template <class T>
 class List {
     Node<T>* _head, * _tail;
-    int count;
+    size_t count;
 public:
     List() : _head(nullptr), _tail(nullptr), count(0) {};
     List(const List<T>& other);
@@ -34,15 +34,14 @@ public:
 
     T& front();
     T& back();
-    int size() const;
+    size_t size() const;
 
     class Iterator {
         Node<T>* _current;
         Node<T>* _head;
     public:
         Iterator(Node<T>* pos = nullptr, Node<T>* head = nullptr)
-    
-        : _current(pos), _head(head) {
+            : _current(pos), _head(head) {
         }
         Iterator& operator++() {
             _current = _current->next;
@@ -58,8 +57,8 @@ public:
         bool operator==(const Iterator& other) const { return _current == other._current; }
         bool operator!=(const Iterator& other) const { return _current != other._current; }
     };
-    Iterator begin_iter() { return Iterator(_head, _head); }
-    Iterator end_iter() { return Iterator(nullptr, _head); }
+    Iterator begin_iter() const { return Iterator(_head, _head); }
+    Iterator end_iter() const { return Iterator(nullptr, _head); }
 };
 
 
@@ -89,7 +88,7 @@ void List<T>::push_back(const T& val) {
         _tail->next = newNode;
         _tail = newNode;
     }
-    count++;
+    ++count;
 }
 
 template <class T>
@@ -99,19 +98,19 @@ void List<T>::push_front(const T& val) {
     if (_tail == nullptr) {
         _tail = newNode;
     }
-    count++;
+    ++count;
 }
 
 template <class T>
 void List<T>::insert(const T& val, int index) {
-    if (index < 0 || index > count) {
+    if (index < 0 || index > static_cast<int>(count)) {
         throw std::logic_error("incorrect index");
     }
     if (index == 0) {
         push_front(val);
         return;
     }
-    if (index == count) {
+    if (index == static_cast<int>(count)) {
         push_back(val);
         return;
     }
@@ -121,7 +120,7 @@ void List<T>::insert(const T& val, int index) {
     }
     Node<T>* newNode = new Node<T>(val, current->next);
     current->next = newNode;
-    count++;
+    ++count;
 }
 
 template <class T>
@@ -140,7 +139,7 @@ void List<T>::insert(const T& val, Node<T>* node) {
     if (current != nullptr) {
         Node<T>* newNode = new Node<T>(val, node);
         current->next = newNode;
-        count++;
+        ++count;
     }
 }
 
@@ -163,7 +162,7 @@ void List<T>::pop_back() {
         _tail = current;
         _tail->next = nullptr;
     }
-    count--;
+    --count;
 }
 
 template <class T>
@@ -177,12 +176,12 @@ void List<T>::pop_front() {
     if (_head == nullptr) {
         _tail = nullptr;
     }
-    count--;
+    --count;
 }
 
 template <class T>
 void List<T>::erase(int index) {
-    if (index < 0 || index >= count) {
+    if (index < 0 || index >= static_cast<int>(count)) {
         throw std::logic_error("incorrect index");
     }
     if (index == 0) {
@@ -199,7 +198,7 @@ void List<T>::erase(int index) {
         _tail = current;
     }
     delete temp;
-    count--;
+    --count;
 }
 
 template <class T>
@@ -221,7 +220,7 @@ void List<T>::erase(Node<T>* node) {
             _tail = current;
         }
         delete node;
-        count--;
+        --count;
     }
 }
 
@@ -274,7 +273,7 @@ T& List<T>::back() {
 }
 
 template <class T>
-int List<T>::size() const {
+size_t List<T>::size() const {
     return count;
 }
 
