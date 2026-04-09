@@ -1,6 +1,7 @@
 #include <utility>
 #include <iostream>
-#include <cstdlib>   
+#include <cstdlib>
+#include <vector>   
 #include "../lib_list/List.h"
 
 template <typename Tkey, typename Tvalue>
@@ -31,13 +32,43 @@ class SkipList {
 	size_t max_lvl;
 public:
 	SkipList(size_t max_lvl = 16) : lvl(1), max_lvl(max_lvl) {}
+	~SkipList();
+
 	size_t get_lvl() const noexcept { return lvl; }
 	size_t get_max_lvl() const noexcept { return max_lvl; }
 
 	size_t generate_lvl();
 	bool is_empty() const noexcept;
 	void push_back(const Tkey& key, const Tvalue& value);
+	const Tvalue* find(const Tkey& key) const;
+private:
+	const Node< SkipNode<Tkey, Tvalue>* >* head_node_at(size_t level) const {
+		const Node< SkipNode<Tkey, Tvalue>* >* hn = heads.begin();
+		size_t idx = 0;
+		while (hn != nullptr && idx < level) { hn = hn->next; ++idx; }
+		return hn;
+	}
+	Node< SkipNode<Tkey, Tvalue>* >* head_node_at_mutable(size_t level) {
+		Node< SkipNode<Tkey, Tvalue>* >* hn = heads.begin();
+		size_t idx = 0;
+		while (hn != nullptr && idx < level) { hn = hn->next; ++idx; }
+		return hn;
+	}
 };
+
+template <typename Tkey, typename Tvalue>
+SkipList<Tkey, Tvalue>::~SkipList() {
+	if (!heads.is_empty()) {
+		Node< SkipNode<Tkey, Tvalue>* >* hn0 = heads.begin();
+		SkipNode<Tkey, Tvalue>* cur = hn0 ? hn0->value : nullptr;
+		while (cur != nullptr) {
+			SkipNode<Tkey, Tvalue>* next = cur->next[0];
+			delete cur;
+			cur = next;
+		}
+	}
+	heads.clear();
+}
 
 template <typename Tkey, typename Tvalue>
 size_t SkipList<Tkey, Tvalue>::generate_lvl() {
@@ -54,13 +85,31 @@ bool SkipList<Tkey, Tvalue>::is_empty() const noexcept {
 }
 
 template <typename Tkey, typename Tvalue>
+const Tvalue* SkipList<Tkey, Tvalue>::find(const Tkey& key) const {
+	if (is_empty()) return nullptr;
+
+	std::vector< SkipNode<Tkey, Tvalue>* > headPtr(lvl, nullptr);
+	for (size_t i = 0; i < lvl; ++i) {
+		const Node< SkipNode<Tkey, Tvalue>* >* hn = head_node_at(i);
+		if (hn) headPtr[i] = hn->value;
+	}
+
+	for (int level = static_cast<int>(lvl) - 1; level >= 0; --level) {
+		SkipNode<Tkey, Tvalue>* node = headPtr[level];
+		while (node != nullptr && node->data.first < key) {
+			node = node->next[level];
+		}
+		if (node != nullptr && node->data.first == key) return &node->data.second;
+	}
+	return nullptr;
+}
+
+template <typename Tkey, typename Tvalue>
 void SkipList<Tkey, Tvalue>::push_back(const Tkey& key, const Tvalue& value) {
 	size_t new_lvl = generate_lvl();
 	SkipNode<Tkey, Tvalue>* new_node = new SkipNode<Tkey, Tvalue>(key, value, new_lvl);
 
-	bool was_empty = is_empty();
 	size_t heads_count = heads.size();
-
 	if (heads_count < new_lvl) {
 		for (size_t i = heads_count; i < new_lvl; ++i) {
 			heads.push_back(nullptr);
@@ -68,60 +117,48 @@ void SkipList<Tkey, Tvalue>::push_back(const Tkey& key, const Tvalue& value) {
 		heads_count = heads.size();
 	}
 
-	if (was_empty) {
-		for (size_t level = 0; level < new_lvl; ++level) {
-			Node< SkipNode<Tkey, Tvalue>* >* hn = heads.begin();
-			size_t idx = 0;
-			while (hn != nullptr && idx < level) { hn = hn->next; ++idx; }
-			if (hn != nullptr) {
-				hn->value = new_node;
-			}
+	size_t use_lvl = std::max(lvl, new_lvl);
+	std::vector< SkipNode<Tkey, Tvalue>* > headPtr(use_lvl, nullptr);
+	for (size_t i = 0; i < use_lvl; ++i) {
+		Node< SkipNode<Tkey, Tvalue>* >* hn = head_node_at_mutable(i);
+		if (hn) headPtr[i] = hn->value;
+	}
+
+	std::vector< SkipNode<Tkey, Tvalue>* > update(new_lvl, nullptr);
+
+	for (int level = static_cast<int>(new_lvl) - 1; level >= 0; --level) {
+		SkipNode<Tkey, Tvalue>* prev = nullptr;
+		SkipNode<Tkey, Tvalue>* cur = headPtr[level];
+		while (cur != nullptr && cur->data.first < key) {
+			prev = cur;
+			cur = cur->next[level];
 		}
-		if (new_lvl > lvl) lvl = new_lvl;
-		return;
+		update[level] = prev;
 	}
 
 	{
-		Node< SkipNode<Tkey, Tvalue>* >* hn0 = heads.begin();
-		SkipNode<Tkey, Tvalue>* cur = nullptr;
-		if (hn0 != nullptr) cur = hn0->value;
-		while (cur != nullptr && cur->data.first < key) {
-			cur = cur->next[0];
-		}
-		if (cur != nullptr && cur->data.first == key) {
-			cur->data.second = value;
+		SkipNode<Tkey, Tvalue>* cur0 = update[0] ? update[0]->next[0] : headPtr[0];
+		if (cur0 != nullptr && cur0->data.first == key) {
+			cur0->data.second = value;
 			delete new_node;
 			return;
 		}
 	}
 
 	for (size_t level = 0; level < new_lvl; ++level) {
-		Node< SkipNode<Tkey, Tvalue>* >* hn = heads.begin();
-		size_t idx = 0;
-		while (hn != nullptr && idx < level) { hn = hn->next; ++idx; }
-		SkipNode<Tkey, Tvalue>* headPtr = nullptr;
-		if (hn != nullptr) headPtr = hn->value;
-
-		if (headPtr == nullptr || key < headPtr->data.first) {
-			new_node->next[level] = headPtr;
+		SkipNode<Tkey, Tvalue>* prev = update[level];
+		if (prev == nullptr) {
+			new_node->next[level] = headPtr[level];
+			Node< SkipNode<Tkey, Tvalue>* >* hn = head_node_at_mutable(level);
 			if (hn != nullptr) {
 				hn->value = new_node;
-			}
-			else {
+			} else {
 				heads.push_back(new_node);
 			}
-			continue;
+		} else {
+			new_node->next[level] = prev->next[level];
+			prev->next[level] = new_node;
 		}
-
-		SkipNode<Tkey, Tvalue>* prev = headPtr;
-		SkipNode<Tkey, Tvalue>* cur = headPtr->next[level];
-		while (cur != nullptr && cur->data.first < key) {
-			prev = cur;
-			cur = cur->next[level];
-		}
-
-		new_node->next[level] = cur;
-		prev->next[level] = new_node;
 	}
 
 	if (new_lvl > lvl) lvl = new_lvl;

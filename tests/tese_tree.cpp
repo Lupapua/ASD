@@ -464,4 +464,6 @@ TEST(TreeFind, FindLeftmostElement) {
     const std::string* val = tree.find(2);
     ASSERT_NE(val, nullptr);
     EXPECT_EQ(*val, "two");
+
+    Tree<int, std::string> t;
 }

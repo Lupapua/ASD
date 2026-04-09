@@ -274,7 +274,7 @@ TEST_F(BSTreeTest, ToStringSortedEmptyTree) {
 // to_string_sorted на одном элементе
 TEST_F(BSTreeTest, ToStringSortedSingleElement) {
     tree.insert(5, "five");
-    std::string result = tree.to_string_sorted();
+    std::string result = tree.to_string_sorted();;
     EXPECT_TRUE(result.find("5:five") != std::string::npos);
 }
 

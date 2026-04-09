@@ -19,7 +19,6 @@ class Tree {
 private:
     Node<Tkey, Tvalue>* _root;
 
-    // обходы принимают ostream& для гибкого вывода
     void lcr_rec(Node<Tkey, Tvalue>* node, std::ostream& out) const {
         if (node == nullptr) return;
         lcr_rec(node->left, out);
@@ -72,7 +71,6 @@ public:
     Tree() : _root(nullptr) {}
     ~Tree() { deleteTree(_root); }
 
-    // Вставка: level-order. Если ключ найден — обновляем значение.
     void insert(const Tkey& key, const Tvalue& value) {
         if (_root == nullptr) {
             _root = new Node<Tkey, Tvalue>(key, value);
@@ -99,7 +97,6 @@ public:
         }
     }
 
-    // Поиск ключа обходом (BFS). Возвращает указатель на значение или nullptr.
     const Tvalue* find(const Tkey& key) const {
         if (_root == nullptr) return nullptr;
         std::queue<Node<Tkey, Tvalue>*> q;
@@ -113,7 +110,6 @@ public:
         return nullptr;
     }
 
-    // Удаление: найти узел с ключом и последний узел уровня; заменить и удалить последний.
     void remove(const Tkey& key) {
         if (_root == nullptr) return;
 
@@ -121,7 +117,7 @@ public:
         Node<Tkey, Tvalue>* last = nullptr;
         Node<Tkey, Tvalue>* parent_of_last = nullptr;
 
-        std::queue<std::pair<Node<Tkey, Tvalue>*, Node<Tkey, Tvalue>*>> q; // pair(node, parent)
+        std::queue<std::pair<Node<Tkey, Tvalue>*, Node<Tkey, Tvalue>*>> q; 
         q.push({ _root, nullptr });
 
         while (!q.empty()) {
@@ -129,7 +125,6 @@ public:
             Node<Tkey, Tvalue>* node = pr.first;
             Node<Tkey, Tvalue>* parent = pr.second;
 
-            // track last and its parent
             last = node;
             parent_of_last = parent;
 
@@ -140,16 +135,13 @@ public:
         }
 
         if (node_to_remove == nullptr) {
-            // ключ не найден — ничего не делаем
             return;
         }
 
-        if (last == nullptr) return; // на всякий
+        if (last == nullptr) return; 
 
-        // Если удаляем именно последний узел
         if (node_to_remove == last) {
             if (parent_of_last == nullptr) {
-                // удаляем корень — дерево становится пустым
                 delete _root;
                 _root = nullptr;
             } else {
@@ -160,10 +152,8 @@ public:
             return;
         }
 
-        // копируем данные последнего в удаляемый и удаляем последний
         node_to_remove->data = last->data;
         if (parent_of_last == nullptr) {
-            // последний — корень (это возможно только если дерево состояло из одного узла, но мы уже обрабатывали)
             delete last;
             _root = nullptr;
             return;
@@ -176,7 +166,6 @@ public:
 
     bool is_empty() const { return _root == nullptr; }
 
-    // Перегруженные методы — для вывода в std::cout
     void lcr() const {
         lcr(std::cout);
     }
@@ -190,7 +179,6 @@ public:
         width(std::cout);
     }
 
-    // Методы с явным потоком вывода
     void lcr(std::ostream& out) const {
         out << "LCR: ";
         lcr_rec(_root, out);

@@ -59,6 +59,10 @@ public:
     };
     Iterator begin_iter() const { return Iterator(_head, _head); }
     Iterator end_iter() const { return Iterator(nullptr, _head); }
+
+    const Node<T>* begin() const {
+        return _head;
+    }
 };
 
 
