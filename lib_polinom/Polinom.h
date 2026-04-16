@@ -12,6 +12,10 @@ public:
 	Polynom();
 	Polynom(const Polynom& other);
 	Polynom(const std::string& str);
+	~Polynom();
+	
+	Polynom& operator=(const Polynom& other);
+	
 	void addMonom(const Monom& m);
 	Polynom operator+(const Polynom& other);
 	Polynom operator-(const Polynom& other);

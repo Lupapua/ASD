@@ -52,6 +52,9 @@ public:
             ++(*this);
             return tmp;
         }
+        T* operator->() {
+            return &(_current->value);
+        }
 
         T& operator*() { return _current->value; }
         bool operator==(const Iterator& other) const { return _current == other._current; }

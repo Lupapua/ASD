@@ -15,6 +15,7 @@ include(cmake/function.cmake)         # подхватываем функции,
 
 
 add_subdirectory(lib_queue)
+add_subdirectory(lib_hashtable)
 add_subdirectory(lib_list)
 add_subdirectory(lib_queuelist)
 add_subdirectory(lib_tvector)
@@ -23,6 +24,7 @@ add_subdirectory(lib_monom)
 add_subdirectory(lib_polinom)
 add_subdirectory(lib_bstree)
 add_subdirectory(lib_tree)
+add_subdirectory(lib_heap)
 
 add_subdirectory(main)                # подключаем дополнительный CMakeLists.txt из подкаталога с именем main
 

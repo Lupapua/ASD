@@ -30,6 +30,9 @@ public:
 	}
 
 	Tvalue find(const Tkey& key) const override {
+		if(!consist(key)) {
+			throw std::logic_error("key not found");
+		}
 		return const_cast<Tvalue&>(_tree.find(key));
 	}
 

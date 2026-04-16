@@ -5,13 +5,25 @@
 #include "../lib_monom/Monom.h"
 #include "polinom.h"
 #include "../lib_list/DoubleList.h"
- 
+
 Polynom::Polynom() {
 	monoms = DoubleList<Monom>();
 }
+
 Polynom::Polynom(const Polynom& other) {
 	monoms = other.monoms;
 }
+
+Polynom::~Polynom() {
+}
+
+Polynom& Polynom::operator=(const Polynom& other) {
+	if (this != &other) {
+		monoms = other.monoms;
+	}
+	return *this;
+}
+
 Polynom::Polynom(const std::string& s) {
 	std::string str = s;
 	for (int i = 0; i < s.size(); ++i) {
@@ -69,6 +81,7 @@ Polynom::Polynom(const std::string& s) {
 		addMonom(Monom(coeff, degX, degY, degZ));
 	}
 }
+
 void Polynom::addMonom(const Monom& m) {
 	if (m.getCoeff() == 0.0)
 		return;
@@ -101,6 +114,7 @@ Polynom Polynom::operator+(const Polynom& other) {
 	}
 	return result;
 }
+
 Polynom Polynom::operator-(const Polynom& other) {
 	Polynom result(*this);
 	for (auto it = other.getMonoms().begin_iter(); it != other.getMonoms().end_iter(); ++it) {
@@ -110,6 +124,7 @@ Polynom Polynom::operator-(const Polynom& other) {
 	}
 	return result;
 }
+
 Polynom Polynom::operator*(const Polynom& other) {
 	Polynom result;
 	for (auto it1 = this->getMonoms().begin_iter(); it1 != this->getMonoms().end_iter(); ++it1) {
@@ -120,23 +135,26 @@ Polynom Polynom::operator*(const Polynom& other) {
 	}
 	return result;
 }
+
 Polynom& Polynom::operator*=(const Polynom& other) {
-	Polynom copy = *this;
-	*this = Polynom();
-	for (auto it1 = copy.getMonoms().begin_iter(); it1 != copy.getMonoms().end_iter(); ++it1) {
+	Polynom temp;
+	for (auto it1 = this->getMonoms().begin_iter(); it1 != this->getMonoms().end_iter(); ++it1) {
 		for (auto it2 = other.getMonoms().begin_iter(); it2 != other.getMonoms().end_iter(); ++it2) {
 			Monom m(it1->getCoeff() * it2->getCoeff(), it1->getDegX() + it2->getDegX(), it1->getDegY() + it2->getDegY(), it1->getDegZ() + it2->getDegZ());
-			addMonom(m);
+			temp.addMonom(m);
 		}
 	}
+	*this = temp;
 	return *this;
 }
+
 Polynom& Polynom::operator+=(const Polynom& other) {
 	for (auto it = other.getMonoms().begin_iter(); it != other.getMonoms().end_iter(); ++it) {
 		addMonom(*it);
 	}
 	return *this;
 }
+
 Polynom& Polynom::operator-=(const Polynom& other) {
 	for (auto it = other.getMonoms().begin_iter(); it != other.getMonoms().end_iter(); ++it) {
 		Monom neg = *it;
@@ -145,6 +163,7 @@ Polynom& Polynom::operator-=(const Polynom& other) {
 	}
 	return *this;
 }
+
 Polynom Polynom::operator/(const Polynom& other) {
 	throw std::logic_error("Polynomial division is not implemented");
 }
@@ -152,6 +171,7 @@ Polynom Polynom::operator/(const Polynom& other) {
 Polynom& Polynom::operator/=(const Polynom& other) {
 	throw std::logic_error("Polynomial division is not implemented");
 }
+
 Polynom Polynom::operator*(double k) const {
 	Polynom result;
 	for (auto it = this->getMonoms().begin_iter(); it != this->getMonoms().end_iter(); ++it) {
@@ -161,16 +181,18 @@ Polynom Polynom::operator*(double k) const {
 	}
 	return result;
 }
+
 Polynom& Polynom::operator*=(double k) {
-	DoubleList<Monom> old = this->monoms;
-	this->monoms = DoubleList<Monom>();
-	for (auto it = old.begin_iter(); it != old.end_iter(); ++it) {
+	Polynom temp;
+	for (auto it = this->getMonoms().begin_iter(); it != this->getMonoms().end_iter(); ++it) {
 		Monom m = *it;
 		m.setCoeff(m.getCoeff() * k);
-		addMonom(m);
+		temp.addMonom(m);
 	}
+	*this = temp;
 	return *this;
 }
+
 Polynom Polynom::operator/(double k) const {
 	if (k == 0) throw std::logic_error("Division by zero");
 	Polynom result;
@@ -181,17 +203,19 @@ Polynom Polynom::operator/(double k) const {
 	}
 	return result;
 }
+
 Polynom& Polynom::operator/=(double k) {
 	if (k == 0) throw std::logic_error("Division by zero");
-	DoubleList<Monom> old = this->monoms;
-	this->monoms = DoubleList<Monom>();
-	for (auto it = old.begin_iter(); it != old.end_iter(); ++it) {
+	Polynom temp;
+	for (auto it = this->getMonoms().begin_iter(); it != this->getMonoms().end_iter(); ++it) {
 		Monom m = *it;
 		m.setCoeff(m.getCoeff() / k);
-		addMonom(m);
+		temp.addMonom(m);
 	}
+	*this = temp;
 	return *this;
 }
+
 double Polynom::value(double x, double y, double z) const {
 	double result = 0.0;
 	for (auto it = this->getMonoms().begin_iter(); it != this->getMonoms().end_iter(); ++it) {

@@ -14,6 +14,7 @@ public:
     virtual std::ostream& print(std::ostream& out) const noexcept = 0;
     virtual bool is_empty() const noexcept = 0;
     virtual bool consist(const Tkey& key) const noexcept = 0;
+
 };
 
 template <typename Tkey, typename Tvalue>
